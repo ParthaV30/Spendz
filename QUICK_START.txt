@@ -1,0 +1,93 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                     EXPENSE TRACKER - QUICK START                          ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+✅ SERVICES RUNNING:
+  • Backend API:    http://localhost:3000/api/v1/health
+  • Frontend App:   http://localhost:5173
+  • Database:       PostgreSQL on localhost:5433
+
+📦 WHAT'S BUILT:
+  ✓ Multi-user expense tracking system
+  ✓ User registration & authentication (JWT)
+  ✓ Expense CRUD operations
+  ✓ Category management
+  ✓ Monthly budget tracking
+  ✓ Real-time dashboard
+  ✓ Secure data isolation (multi-tenant)
+
+🚀 TO START USING:
+
+  1. Open browser:  http://localhost:5173
+
+  2. Register account with:
+     - Email:     any@example.com
+     - Password:  minimum 8 characters
+     - Name:      your name
+
+  3. After login, you can:
+     - Add expenses (categorized)
+     - Track spending by category
+     - Set monthly budgets
+     - View dashboard with stats
+
+💻 TERMINAL COMMANDS:
+
+  # Start backend (Terminal 1):
+  cd backend && npm run dev
+
+  # Start frontend (Terminal 2):
+  cd frontend && npm run dev
+
+  # Start database:
+  docker-compose up -d
+
+  # Stop everything:
+  docker-compose down
+
+📊 API EXAMPLES:
+
+  # Register user:
+  curl -X POST http://localhost:3000/api/v1/auth/register \
+    -H "Content-Type: application/json" \
+    -d '{"email":"user@example.com","password":"pass123","name":"John"}'
+
+  # Create category:
+  curl -X POST http://localhost:3000/api/v1/categories \
+    -H "Authorization: Bearer <TOKEN>" \
+    -H "Content-Type: application/json" \
+    -d '{"name":"Food","color":"#FF6B6B"}'
+
+  # Add expense:
+  curl -X POST http://localhost:3000/api/v1/expenses \
+    -H "Authorization: Bearer <TOKEN>" \
+    -H "Content-Type: application/json" \
+    -d '{"categoryId":1,"amount":25.50,"expenseDate":"2026-08-27"}'
+
+📁 PROJECT STRUCTURE:
+  backend/      - Express API with PostgreSQL
+  frontend/     - React + Vite SPA
+  docker-compose.yml - Database container
+
+📚 DOCUMENTATION:
+  - README.md                  - User guide
+  - IMPLEMENTATION_SUMMARY.md  - Technical details
+  - QUICK_START.txt           - This file
+
+🎯 FEATURES:
+  Dashboard     - View spending summary & budget status
+  Expenses      - Add, edit, delete expenses
+  Categories    - Create & manage categories
+  Budgets       - Set monthly spending limits
+  Reports       - View analytics (coming soon)
+  Settings      - Manage profile & preferences
+
+✨ READY TO USE!
+
+  The app is fully functional. Start tracking expenses now! 💰
+  
+  Questions? Check the documentation files.
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║  Built with React, Express, PostgreSQL | JWT Authentication | Multi-User  ║
+╚════════════════════════════════════════════════════════════════════════════╝
