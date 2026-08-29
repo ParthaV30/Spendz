@@ -17,10 +17,10 @@ export default async function InvitationPage({ params }: { params: { token: stri
           <h2 className="text-xl font-bold text-foreground">You are invited to join a Group!</h2>
           <p className="text-xs text-muted-foreground">Please sign in or register to accept this invitation.</p>
           <div className="flex justify-center space-x-4">
-            <Link href="/login" className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl">
+            <Link href={`/login?invite=${params.token}`} className="px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl">
               Sign In
             </Link>
-            <Link href="/register" className="px-5 py-2.5 bg-secondary text-foreground text-sm font-semibold rounded-xl">
+            <Link href={`/register?invite=${params.token}`} className="px-5 py-2.5 bg-secondary text-foreground text-sm font-semibold rounded-xl">
               Register
             </Link>
           </div>

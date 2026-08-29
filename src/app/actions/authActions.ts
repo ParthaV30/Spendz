@@ -21,6 +21,7 @@ export async function registerUser(formData: FormData) {
   const email = formData.get("email") as string;
   const name = formData.get("name") as string;
   const password = formData.get("password") as string;
+  const inviteToken = (formData.get("inviteToken") as string)?.trim();
 
   const parsed = RegisterSchema.safeParse({ name, email, password });
   if (!parsed.success) {
@@ -47,7 +48,45 @@ export async function registerUser(formData: FormData) {
     },
   });
 
-  // Create default group "My Bachelor Room" for new standalone users
+  // If registering via an invitation link, join invited room as MEMBER directly
+  if (inviteToken) {
+    const invitation = await prisma.invitation.findUnique({
+      where: { token: inviteToken },
+      include: { group: true },
+    });
+
+    if (invitation && invitation.expiresAt >= new Date() && !invitation.acceptedAt) {
+      await prisma.groupMember.create({
+        data: {
+          groupId: invitation.groupId,
+          userId: user.id,
+          role: invitation.role, // Defaults to "MEMBER"
+          status: "ACTIVE",
+        },
+      });
+
+      await prisma.invitation.update({
+        where: { id: invitation.id },
+        data: { acceptedAt: new Date() },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          groupId: invitation.groupId,
+          userId: user.id,
+          action: "MEMBER_JOIN",
+          entityType: "User",
+          entityId: user.id,
+          metadata: JSON.stringify({ role: invitation.role }),
+        },
+      });
+
+      await createSessionCookie(user.id);
+      return { success: true, groupId: invitation.groupId };
+    }
+  }
+
+  // Create default group ONLY for standalone users registering without an invite
   const group = await prisma.group.create({
     data: {
       name: `${name.trim()}'s Apartment`,
@@ -85,6 +124,7 @@ export async function registerUser(formData: FormData) {
 export async function loginUser(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const inviteToken = (formData.get("inviteToken") as string)?.trim();
 
   const parsed = LoginSchema.safeParse({ email, password });
   if (!parsed.success) {
@@ -105,6 +145,36 @@ export async function loginUser(formData: FormData) {
   }
 
   await createSessionCookie(user.id);
+
+  // If logging in via invitation link, join invited group as MEMBER
+  if (inviteToken) {
+    const invitation = await prisma.invitation.findUnique({
+      where: { token: inviteToken },
+    });
+
+    if (invitation && invitation.expiresAt >= new Date() && !invitation.acceptedAt) {
+      await prisma.groupMember.upsert({
+        where: { groupId_userId: { groupId: invitation.groupId, userId: user.id } },
+        create: {
+          groupId: invitation.groupId,
+          userId: user.id,
+          role: invitation.role,
+          status: "ACTIVE",
+        },
+        update: {
+          status: "ACTIVE",
+          role: invitation.role,
+        },
+      });
+
+      await prisma.invitation.update({
+        where: { id: invitation.id },
+        data: { acceptedAt: new Date() },
+      });
+
+      return { success: true, groupId: invitation.groupId };
+    }
+  }
 
   // Find user's first active group
   const membership = await prisma.groupMember.findFirst({
