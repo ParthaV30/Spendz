@@ -6,6 +6,7 @@ import { updateGroup, changeMemberRole, removeGroupMember } from "@/app/actions/
 import { createCategory, updateCategory } from "@/app/actions/categoryActions";
 import { lockMonthPeriod, unlockMonthPeriod } from "@/app/actions/monthLockActions";
 import InviteMemberModal from "@/components/InviteMemberModal";
+import EditProfileModal from "@/components/EditProfileModal";
 
 interface MemberItem {
   id: string;
@@ -54,6 +55,8 @@ export default function GroupSettingsClient({
   lockedMonths,
 }: GroupSettingsClientProps) {
   const isAdmin = userRole === "ADMIN";
+  const currentUser = members.find((m) => m.id === currentUserId);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // Group Details Form
   const [name, setName] = useState(initialName);
@@ -194,12 +197,19 @@ export default function GroupSettingsClient({
                     {m.name.charAt(0)}
                   </div>
                 )}
-                <div>
-                  <p className="text-xs font-bold text-foreground">
-                    {m.name} {m.id === currentUserId && "(You)"}
-                  </p>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-xs font-bold text-foreground">{m.name}</p>
+                    {m.id === currentUserId && (
+                      <button
+                        onClick={() => setIsProfileModalOpen(true)}
+                        className="text-[10px] font-bold text-purple-400 hover:underline bg-purple-500/10 px-2 py-0.5 rounded-md flex items-center space-x-1"
+                      >
+                        <Edit2 className="h-3 w-3" />
+                        <span>Edit Avatar</span>
+                      </button>
+                    )}
+                  </div>
                   <p className="text-[10px] text-muted-foreground">{m.email}</p>
-                </div>
               </div>
 
               <div className="flex items-center space-x-3">
@@ -348,6 +358,13 @@ export default function GroupSettingsClient({
       </div>
 
       <InviteMemberModal groupId={groupId} isOpen={isInviteOpen} onClose={() => setIsInviteOpen(false)} />
+      {currentUser && (
+        <EditProfileModal
+          user={currentUser}
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

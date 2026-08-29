@@ -4,7 +4,7 @@ import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { loginUser } from "@/app/actions/authActions";
-import { AlertCircle, Lock, Mail, ArrowRight, UserPlus } from "lucide-react";
+import { AlertCircle, Lock, Mail, ArrowRight, UserPlus, Eye, EyeOff } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -13,6 +13,8 @@ function LoginForm() {
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -79,11 +81,19 @@ function LoginForm() {
             <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <input
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               placeholder="••••••••"
-              className="w-full bg-secondary/60 border border-border rounded-xl pl-9 pr-3 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full bg-secondary/60 border border-border rounded-xl pl-9 pr-10 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground transition-colors"
+              title={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
         </div>
 
