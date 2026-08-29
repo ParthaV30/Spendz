@@ -40,13 +40,6 @@ export default function LoginPage() {
           <p className="text-xs text-muted-foreground">Sign in to manage your shared room expenses</p>
         </div>
 
-        {/* Demo credentials hint */}
-        <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-xs text-purple-300 space-y-1">
-          <p className="font-bold">🔑 Demo Seed Account:</p>
-          <p>Email: <code className="font-mono bg-purple-950/60 px-1 py-0.5 rounded">arun@example.com</code></p>
-          <p>Password: <code className="font-mono bg-purple-950/60 px-1 py-0.5 rounded">Password123!</code></p>
-        </div>
-
         {error && (
           <div className="flex items-center space-x-2 p-3 rounded-xl bg-destructive/20 border border-destructive/40 text-destructive text-sm font-medium">
             <AlertCircle className="h-4 w-4 shrink-0" />
@@ -63,7 +56,6 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 required
-                defaultValue="arun@example.com"
                 placeholder="you@example.com"
                 className="w-full bg-secondary/60 border border-border rounded-xl pl-9 pr-3 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
@@ -78,7 +70,6 @@ export default function LoginPage() {
                 name="password"
                 type="password"
                 required
-                defaultValue="Password123!"
                 placeholder="••••••••"
                 className="w-full bg-secondary/60 border border-border rounded-xl pl-9 pr-3 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
