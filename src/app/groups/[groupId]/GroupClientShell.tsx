@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
+import MobileNav from "@/components/MobileNav";
 import AddExpenseModal from "@/components/AddExpenseModal";
 
 interface GroupClientShellProps {
@@ -42,7 +43,14 @@ export default function GroupClientShell({
         currentGroupId={currentGroupId}
         onOpenAddExpense={() => setIsAddModalOpen(true)}
       />
-      {children}
+      <div className="pb-16 md:pb-0">{children}</div>
+      <MobileNav
+        groupId={currentGroupId}
+        role={role}
+        user={user}
+        groups={groups}
+        onOpenAddExpense={() => setIsAddModalOpen(true)}
+      />
       <AddExpenseModal
         groupId={currentGroupId}
         members={members}
