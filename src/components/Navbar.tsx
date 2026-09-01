@@ -55,14 +55,17 @@ export default function Navbar({
                   onChange={(e) => {
                     if (e.target.value === "PERSONAL") {
                       window.location.href = "/personal";
+                    } else if (e.target.value === "FITNESS") {
+                      window.location.href = "/fitness";
                     } else if (e.target.value) {
                       window.location.href = `/groups/${e.target.value}/dashboard`;
                     }
                   }}
                   className="bg-secondary/60 text-sm font-medium text-foreground py-1.5 px-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
                 >
-                  <optgroup label="Personal Mode">
+                  <optgroup label="Personal & Fitness">
                     <option value="PERSONAL">👤 Personal Tracker</option>
+                    <option value="FITNESS">💪 Fitness & Gym</option>
                   </optgroup>
                   <optgroup label="Spendz Groups">
                     {groups.map((g) => (
@@ -76,13 +79,15 @@ export default function Navbar({
 
               <Link
                 href="/personal"
-                className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-all ${
-                  !currentGroupId
-                    ? "bg-blue-500/20 text-blue-400 border-blue-500/40 shadow-sm"
-                    : "text-muted-foreground hover:text-foreground border-border/40 hover:bg-secondary/60"
-                }`}
+                className="text-xs font-bold px-3 py-1.5 rounded-lg border text-muted-foreground hover:text-foreground border-border/40 hover:bg-secondary/60 transition-all"
               >
-                Personal Tracker
+                Personal
+              </Link>
+              <Link
+                href="/fitness"
+                className="text-xs font-bold px-3 py-1.5 rounded-lg border bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-sm transition-all"
+              >
+                💪 Gym Tracker
               </Link>
             </div>
           </div>

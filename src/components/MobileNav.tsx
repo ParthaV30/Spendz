@@ -169,14 +169,17 @@ export default function MobileNav({
                   onChange={(e) => {
                     if (e.target.value === "PERSONAL") {
                       window.location.href = "/personal";
+                    } else if (e.target.value === "FITNESS") {
+                      window.location.href = "/fitness";
                     } else if (e.target.value) {
                       window.location.href = `/groups/${e.target.value}/dashboard`;
                     }
                   }}
                   className="w-full bg-secondary/60 text-xs font-semibold text-foreground py-2 px-3 rounded-xl border border-border focus:outline-none"
                 >
-                  <optgroup label="Personal Mode">
+                  <optgroup label="Personal & Fitness">
                     <option value="PERSONAL">👤 Personal Tracker</option>
+                    <option value="FITNESS">💪 Fitness & Gym</option>
                   </optgroup>
                   <optgroup label="Spendz Groups">
                     {groups.map((g) => (

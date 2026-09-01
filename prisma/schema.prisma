@@ -27,6 +27,8 @@ model User {
   personalExpenses    PersonalExpense[]
   personalCategories  PersonalCategory[]
   personalBudgets     PersonalBudget[]
+  workoutSessions     WorkoutSession[]
+  gymMemberships      GymMembership[]
 }
 
 model Group {
@@ -293,4 +295,53 @@ model PersonalBudget {
   @@unique([userId, categoryId, month, year])
   @@index([userId])
 }
+
+model WorkoutSession {
+  id          String         @id @default(cuid())
+  userId      String
+  title       String         // e.g., "Push Day", "Barbell Bench & Triceps"
+  splitType   String         @default("PUSH") // PUSH, PULL, LEGS, CARDIO, FULL_BODY
+  durationMin Int            @default(45)
+  workoutDate DateTime       @default(now())
+  notes       String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sets        WorkoutSet[]
+
+  @@index([userId])
+  @@index([workoutDate])
+}
+
+model WorkoutSet {
+  id           String         @id @default(cuid())
+  sessionId    String
+  exerciseName String         // e.g., "Barbell Bench Press"
+  setNumber    Int
+  reps         Int            @default(10)
+  weightKg     Float          @default(0)
+  completed    Boolean        @default(true)
+
+  session      WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
+model GymMembership {
+  id        String   @id @default(cuid())
+  userId    String
+  planName  String   @default("Premium Gym Pass")
+  startDate DateTime @default(now())
+  endDate   DateTime
+  cost      Int      @default(0) // in minor units
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 

@@ -78,6 +78,13 @@ export default function Sidebar({ groupId, role }: SidebarProps) {
           <LayoutDashboard className="h-4 w-4 shrink-0 text-blue-400" />
           <span>Personal Tracker</span>
         </Link>
+        <Link
+          href="/fitness"
+          className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-foreground bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all text-emerald-300"
+        >
+          <Target className="h-4 w-4 shrink-0 text-emerald-400" />
+          <span>Gym & Fitness</span>
+        </Link>
       </div>
 
       <div className="space-y-1">
