@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { verifyGroupMembership } from "@/lib/auth";
 import { calculateEqualSplit } from "@/lib/calculations/splitEngine";
+import { isPeriodLocked } from "@/lib/calculations/monthLocking";
 import { revalidatePath } from "next/cache";
 
 export async function createRecurringExpense(
@@ -49,6 +50,15 @@ export async function processDueRecurringExpenses(groupId: string) {
   const { user } = await verifyGroupMembership(groupId);
   const now = new Date();
 
+  // Check Month Locking
+  const lockedMonths = await prisma.lockedMonth.findMany({
+    where: { groupId },
+  });
+
+  if (isPeriodLocked(now, lockedMonths)) {
+    return { error: "Cannot process recurring expenses: Current accounting period is LOCKED." };
+  }
+
   // Find due active recurring items
   const dueItems = await prisma.recurringExpense.findMany({
     where: {
@@ -79,7 +89,7 @@ export async function processDueRecurringExpenses(groupId: string) {
 
     await prisma.$transaction(async (tx) => {
       // Create actual expense entry
-      await tx.expense.create({
+      const created = await tx.expense.create({
         data: {
           groupId,
           paidById: item.createdById,
@@ -106,6 +116,36 @@ export async function processDueRecurringExpenses(groupId: string) {
         where: { id: item.id },
         data: { nextDueDate: nextDate },
       });
+
+      // Audit Log
+      await tx.auditLog.create({
+        data: {
+          groupId,
+          userId: item.createdById,
+          action: "EXPENSE_CREATE",
+          entityType: "Expense",
+          entityId: created.id,
+          metadata: JSON.stringify({
+            description: created.description,
+            amount: item.amount / 100,
+            autoRecurring: true,
+          }),
+        },
+      });
+
+      // Notify involved members (except payer)
+      const otherMembers = memberUserIds.filter((id) => id !== item.createdById);
+      if (otherMembers.length > 0) {
+        await tx.notification.createMany({
+          data: otherMembers.map((userId) => ({
+            userId,
+            groupId,
+            title: "Automated Recurring Expense Added",
+            message: `Scheduled bill "${item.description}" (₹${(item.amount / 100).toFixed(2)}) was processed.`,
+            type: "EXPENSE_ADDED",
+          })),
+        });
+      }
     });
 
     processedCount++;

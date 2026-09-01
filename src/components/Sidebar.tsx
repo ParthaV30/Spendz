@@ -66,10 +66,23 @@ export default function Sidebar({ groupId, role }: SidebarProps) {
   ];
 
   return (
-    <aside className="w-64 shrink-0 border-r border-border/40 bg-card/40 hidden md:block min-h-[calc(100vh-4rem)] p-4">
+    <aside className="w-64 shrink-0 border-r border-border/40 bg-card/40 hidden md:block min-h-[calc(100vh-4rem)] p-4 space-y-6">
+      <div className="p-3 rounded-2xl border border-blue-500/30 bg-blue-950/20 space-y-2">
+        <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-400 block">
+          Personal Mode
+        </span>
+        <Link
+          href="/personal"
+          className="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-foreground bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition-all text-blue-300"
+        >
+          <LayoutDashboard className="h-4 w-4 shrink-0 text-blue-400" />
+          <span>Personal Tracker</span>
+        </Link>
+      </div>
+
       <div className="space-y-1">
         <p className="px-3 text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
-          Navigation ({role})
+          Room Navigation ({role})
         </p>
         {navItems.map((item) => {
           const Icon = item.icon;

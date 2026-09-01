@@ -38,10 +38,10 @@ function LoginForm() {
     <div className="w-full max-w-md space-y-8 glass-panel p-8 rounded-3xl shadow-2xl border border-purple-500/20">
       <div className="text-center space-y-2">
         <div className="mx-auto h-12 w-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/30 text-white font-black text-2xl">
-          R
+          S
         </div>
-        <h1 className="text-2xl font-black text-foreground tracking-tight">ROOMMATE</h1>
-        <p className="text-xs text-muted-foreground">Sign in to manage your shared room expenses</p>
+        <h1 className="text-2xl font-black text-foreground tracking-tight">SPENDZ</h1>
+        <p className="text-xs text-muted-foreground">Sign in to manage your personal & shared expenses</p>
       </div>
 
       {inviteToken && (

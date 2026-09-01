@@ -38,35 +38,53 @@ export default function Navbar({
         <div className="flex h-16 items-center justify-between px-4 md:px-8">
           {/* Left branding */}
           <div className="flex items-center space-x-3">
-            <Link href={currentGroupId ? `/groups/${currentGroupId}/dashboard` : "/dashboard"} className="flex items-center space-x-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 shadow-lg shadow-purple-500/20 text-white font-bold">
-                R
+            <Link href={currentGroupId ? `/groups/${currentGroupId}/dashboard` : "/personal"} className="flex items-center space-x-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 shadow-lg shadow-purple-500/20 text-white font-bold text-lg">
+                S
               </div>
               <span className="text-xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-purple-400">
-                ROOMMATE
+                SPENDZ
               </span>
             </Link>
 
-            {/* Group Switcher dropdown badge */}
-            {groups.length > 0 && (
-              <div className="hidden sm:flex items-center space-x-2 pl-4 border-l border-border/60">
+            {/* Group Switcher dropdown badge & Personal Tracker toggle */}
+            <div className="hidden sm:flex items-center space-x-3 pl-4 border-l border-border/60">
+              {groups.length > 0 && (
                 <select
-                  value={currentGroupId || ""}
+                  value={currentGroupId || "PERSONAL"}
                   onChange={(e) => {
-                    if (e.target.value) {
+                    if (e.target.value === "PERSONAL") {
+                      window.location.href = "/personal";
+                    } else if (e.target.value) {
                       window.location.href = `/groups/${e.target.value}/dashboard`;
                     }
                   }}
                   className="bg-secondary/60 text-sm font-medium text-foreground py-1.5 px-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary"
                 >
-                  {groups.map((g) => (
-                    <option key={g.id} value={g.id}>
-                      {g.name} ({g.role})
-                    </option>
-                  ))}
+                  <optgroup label="Personal Mode">
+                    <option value="PERSONAL">👤 Personal Tracker</option>
+                  </optgroup>
+                  <optgroup label="Spendz Groups">
+                    {groups.map((g) => (
+                      <option key={g.id} value={g.id}>
+                        🏠 {g.name} ({g.role})
+                      </option>
+                    ))}
+                  </optgroup>
                 </select>
-              </div>
-            )}
+              )}
+
+              <Link
+                href="/personal"
+                className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-all ${
+                  !currentGroupId
+                    ? "bg-blue-500/20 text-blue-400 border-blue-500/40 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground border-border/40 hover:bg-secondary/60"
+                }`}
+              >
+                Personal Tracker
+              </Link>
+            </div>
           </div>
 
           {/* Right actions */}

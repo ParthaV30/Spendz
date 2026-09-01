@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ROOMMATE — Shared Bachelor Room Expense Tracker",
-  description: "Track shared room expenses, calculate balances, and simplify debt settlements effortlessly.",
+  title: "Spendz — Personal & Shared Expense Tracker",
+  description: "Track personal spending & shared room expenses, calculate net balances, and manage budgets effortlessly.",
 };
 
 export default function RootLayout({

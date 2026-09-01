@@ -24,6 +24,9 @@ model User {
   createdRecurring    RecurringExpense[]
   notifications       Notification[]
   auditLogs           AuditLog[]
+  personalExpenses    PersonalExpense[]
+  personalCategories  PersonalCategory[]
+  personalBudgets     PersonalBudget[]
 }
 
 model Group {
@@ -239,3 +242,55 @@ model LockedMonth {
 
   @@unique([groupId, year, month])
 }
+
+model PersonalCategory {
+  id               String            @id @default(cuid())
+  userId           String
+  name             String
+  icon             String            @default("Tag")
+  isDefault        Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expenses         PersonalExpense[]
+  budgets          PersonalBudget[]
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model PersonalExpense {
+  id          String           @id @default(cuid())
+  userId      String
+  categoryId  String
+  amount      Int              // Minor units (paise/cents)
+  description String
+  expenseDate DateTime         @default(now())
+  receiptUrl  String?
+  notes       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    PersonalCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([expenseDate])
+}
+
+model PersonalBudget {
+  id          String           @id @default(cuid())
+  userId      String
+  categoryId  String
+  month       Int              // 1 to 12
+  year        Int              // e.g., 2026
+  amount      Int              // Minor units
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category    PersonalCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryId, month, year])
+  @@index([userId])
+}
+

@@ -20,5 +20,5 @@ export default async function HomePage() {
     redirect(`/groups/${membership.groupId}/dashboard`);
   }
 
-  redirect("/login");
+  redirect("/personal");
 }

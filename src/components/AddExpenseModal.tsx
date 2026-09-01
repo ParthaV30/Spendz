@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { X, Upload, Check, AlertCircle } from "lucide-react";
+import { X, Upload, Check, AlertCircle, Sparkles, Loader2 } from "lucide-react";
 import { createExpense } from "@/app/actions/expenseActions";
+import { processReceiptImage, parseReceiptText } from "@/lib/ocrScanner";
 
 interface Member {
   id: string;
@@ -43,9 +44,60 @@ export default function AddExpenseModal({
   const [receiptUrl, setReceiptUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [ocrScanning, setOcrScanning] = useState(false);
+  const [ocrMessage, setOcrMessage] = useState<string | null>(null);
 
   // Split state per user
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>(members.map((m) => m.id));
+
+  const handleReceiptScan = async (file: File) => {
+    if (!file) return;
+    setOcrScanning(true);
+    setOcrMessage("Scanning receipt using AI OCR...");
+    setError(null);
+
+    try {
+      // Create local preview object URL
+      const objectUrl = URL.createObjectURL(file);
+      setReceiptUrl(objectUrl);
+
+      const parsed = await processReceiptImage(file);
+
+      let autofilledCount = 0;
+      if (parsed.amount) {
+        setAmount(parsed.amount.toString());
+        autofilledCount++;
+      }
+      if (parsed.description) {
+        setDescription(parsed.description);
+        autofilledCount++;
+      }
+      if (parsed.date) {
+        setExpenseDate(parsed.date);
+        autofilledCount++;
+      }
+      if (parsed.suggestedCategoryKeyword) {
+        const matched = categories.find((c) =>
+          c.name.toLowerCase().includes(parsed.suggestedCategoryKeyword!.toLowerCase())
+        );
+        if (matched) {
+          setCategoryId(matched.id);
+          autofilledCount++;
+        }
+      }
+
+      setOcrMessage(
+        autofilledCount > 0
+          ? `✨ Successfully scanned! Auto-filled ${autofilledCount} field(s).`
+          : "Receipt scanned, but couldn't auto-detect fields clearly. Please check fields manually."
+      );
+    } catch (err) {
+      console.error(err);
+      setError("Failed to process receipt image. Please enter details manually.");
+    } finally {
+      setOcrScanning(false);
+    }
+  };
   const [exactAmounts, setExactAmounts] = useState<Record<string, string>>({});
   const [percentageShares, setPercentageShares] = useState<Record<string, string>>({});
   const [sharesCounts, setSharesCounts] = useState<Record<string, string>>({});
@@ -139,6 +191,52 @@ export default function AddExpenseModal({
             <span>{error}</span>
           </div>
         )}
+
+        {/* AI Receipt Scanner Banner */}
+        <div className="relative overflow-hidden rounded-2xl border border-purple-500/30 bg-gradient-to-r from-purple-900/30 via-indigo-900/20 to-secondary/40 p-4 transition-all hover:border-purple-500/50">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-600/20 text-purple-400 border border-purple-500/30">
+                {ocrScanning ? <Loader2 className="h-5 w-5 animate-spin" /> : <Sparkles className="h-5 w-5" />}
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+                  Smart AI Receipt Scanner
+                  <span className="text-[10px] uppercase font-extrabold px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                    OCR
+                  </span>
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  Upload a photo of your receipt to auto-extract amount, date & vendor details
+                </p>
+              </div>
+            </div>
+
+            <label className="cursor-pointer shrink-0 ml-3">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleReceiptScan(file);
+                }}
+                className="hidden"
+                disabled={ocrScanning}
+              />
+              <span className="inline-flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 rounded-xl shadow-md transition-all">
+                <Upload className="h-3.5 w-3.5" />
+                <span>{ocrScanning ? "Scanning..." : "Scan Receipt"}</span>
+              </span>
+            </label>
+          </div>
+
+          {ocrMessage && (
+            <div className="mt-3 p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs font-medium text-purple-300 flex items-center space-x-2">
+              <Check className="h-3.5 w-3.5 shrink-0 text-purple-400" />
+              <span>{ocrMessage}</span>
+            </div>
+          )}
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Amount & Description */}

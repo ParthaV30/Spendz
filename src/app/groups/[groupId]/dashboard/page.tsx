@@ -92,13 +92,15 @@ export default async function GroupDashboardPage({ params }: { params: { groupId
     total,
   }));
 
-  // Budget warnings
+  // Budget warnings & total monthly budget
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
   const budgets = await prisma.budget.findMany({
     where: { groupId: params.groupId, month: currentMonth, year: currentYear },
     include: { category: true },
   });
+
+  const totalBudgetRs = budgets.reduce((acc, b) => acc + b.amount / 100, 0);
 
   const budgetWarnings = budgets.map((b) => {
     const spentMinor = expenses
@@ -139,12 +141,14 @@ export default async function GroupDashboardPage({ params }: { params: { groupId
             <span>•</span>
             <span>{group.members.length} Members</span>
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-foreground">{group.name}</h1>
-          <p className="text-sm text-muted-foreground">{group.description || "Shared Room Expense Dashboard"}</p>
+          <h1 className="text-3xl font-black text-foreground tracking-tight">{group.name}</h1>
+          {group.description && (
+            <p className="text-sm text-muted-foreground mt-1">{group.description}</p>
+          )}
         </div>
       </div>
 
-      {/* Budget Alerts Banner if any */}
+      {/* Budget Warnings Alert Banner */}
       {budgetWarnings.length > 0 && (
         <div className="space-y-2">
           {budgetWarnings.map((w, i) => (
@@ -176,6 +180,7 @@ export default async function GroupDashboardPage({ params }: { params: { groupId
         mySpending={myShareRs}
         iOwe={iOweRs}
         imOwed={imOwedRs}
+        totalBudget={totalBudgetRs}
       />
 
       {/* Main Grid Section */}

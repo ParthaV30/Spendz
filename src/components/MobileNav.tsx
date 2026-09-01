@@ -147,9 +147,9 @@ export default function MobileNav({
               <div className="flex items-center justify-between border-b border-border/40 pb-4">
                 <div className="flex items-center space-x-2">
                   <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white font-black text-sm">
-                    R
+                    S
                   </div>
-                  <span className="font-black text-foreground tracking-tight">ROOMMATE</span>
+                  <span className="font-black text-foreground tracking-tight">SPENDZ</span>
                 </div>
                 <button
                   onClick={() => setDrawerOpen(false)}
@@ -159,29 +159,34 @@ export default function MobileNav({
                 </button>
               </div>
 
-              {/* Group Switcher */}
-              {groups.length > 0 && (
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Current Room / Group
-                  </label>
-                  <select
-                    value={groupId}
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        window.location.href = `/groups/${e.target.value}/dashboard`;
-                      }
-                    }}
-                    className="w-full bg-secondary/60 text-xs font-semibold text-foreground py-2 px-3 rounded-xl border border-border focus:outline-none"
-                  >
+              {/* Group / Mode Switcher */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  Mode / Room Switcher
+                </label>
+                <select
+                  value={groupId || "PERSONAL"}
+                  onChange={(e) => {
+                    if (e.target.value === "PERSONAL") {
+                      window.location.href = "/personal";
+                    } else if (e.target.value) {
+                      window.location.href = `/groups/${e.target.value}/dashboard`;
+                    }
+                  }}
+                  className="w-full bg-secondary/60 text-xs font-semibold text-foreground py-2 px-3 rounded-xl border border-border focus:outline-none"
+                >
+                  <optgroup label="Personal Mode">
+                    <option value="PERSONAL">👤 Personal Tracker</option>
+                  </optgroup>
+                  <optgroup label="Spendz Groups">
                     {groups.map((g) => (
                       <option key={g.id} value={g.id}>
-                        {g.name} ({g.role})
+                        🏠 {g.name} ({g.role})
                       </option>
                     ))}
-                  </select>
-                </div>
-              )}
+                  </optgroup>
+                </select>
+              </div>
 
               {/* Navigation Links */}
               <div className="space-y-1 pt-2">
